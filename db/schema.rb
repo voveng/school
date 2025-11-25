@@ -10,9 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_25_055433) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_25_064547) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "class_rooms", force: :cascade do |t|
+    t.integer "number", null: false
+    t.string "letter", null: false
+    t.integer "students_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "school_id", null: false
+    t.index ["school_id"], name: "index_class_rooms_on_school_id"
+  end
+
+  create_table "students", force: :cascade do |t|
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.string "surname", null: false
+    t.bigint "school_id", null: false
+    t.bigint "class_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["class_id"], name: "index_students_on_class_id"
+    t.index ["school_id"], name: "index_students_on_school_id"
+  end
 
   create_table "uchi_schools", force: :cascade do |t|
     t.string "name", null: false
@@ -20,4 +42,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_25_055433) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "class_rooms", "uchi_schools", column: "school_id"
+  add_foreign_key "students", "class_rooms", column: "class_id"
+  add_foreign_key "students", "uchi_schools", column: "school_id"
 end
