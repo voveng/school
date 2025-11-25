@@ -1,0 +1,2 @@
+class UchiSchool < ApplicationRecord
+end
