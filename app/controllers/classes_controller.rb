@@ -6,6 +6,6 @@ class ClassesController < BaseController
       return
     end
     @classes = school.classes
-    render :classes
+    render :classes, status: :ok
   end
 end
