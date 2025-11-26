@@ -1,5 +1,5 @@
 class Student < ApplicationRecord
-  belongs_to :school, class_name: 'UchiSchool'
+  belongs_to :school, class_name: 'UchiSchool', foreign_key: :school_id
   belongs_to :class_room, class_name: 'ClassRoom', foreign_key: :class_id, counter_cache: true
   validates :first_name, :last_name, :surname, :school_id, :class_id,
             presence: true
