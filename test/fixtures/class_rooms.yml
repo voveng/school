@@ -4,8 +4,10 @@ one:
   number: 1
   letter: MyString
   students_count: 1
+  school: one
 
 two:
   number: 1
   letter: MyString
   students_count: 1
+  school: two

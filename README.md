@@ -1,24 +1,163 @@
-# README
+# School API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+API-сервис для управления школами, классами и учениками.
 
-Things you may want to cover:
+## Технологический стек
 
-* Ruby version
+*   **Ruby:** 3.2.2 (как указано в `.ruby-version`)
+*   **Ruby on Rails:** 8.0
+*   **База данных:** PostgreSQL
+*   **Веб-сервер:** Puma
+*   **Тестирование:** Minitest
+*   **Развертывание:** Kamal
 
-* System dependencies
+---
 
-* Configuration
+## Начало работы
 
-* Database creation
+### Требования
 
-* Database initialization
+Для запуска проекта вам потребуются:
 
-* How to run the test suite
+*   Ruby 3.2.2
+*   Bundler
+*   PostgreSQL
+*   Docker (рекомендуется для окружения, аналогичного production)
 
-* Services (job queues, cache servers, search engines, etc.)
+### Установка
 
-* Deployment instructions
+1.  **Склонируйте репозиторий:**
+    ```bash
+    git clone <repository_url>
+    cd school
+    ```
 
-* ...
+2.  **Установите зависимости:**
+    ```bash
+    bundle install
+    ```
+
+3.  **Создайте и настройте базу данных:**
+    Выполните следующие команды для создания базы данных, применения миграций и заполнения начальными данными.
+    ```bash
+    rails db:create
+    rails db:migrate
+    rails db:seed
+    ```
+
+### Запуск приложения
+
+Для запуска веб-сервера выполните:
+
+```bash
+rails s
+```
+Приложение будет доступно по адресу `http://localhost:3000`.
+
+---
+
+## Архитектура
+
+### Модели данных
+
+*   `UchiSchool`: Представляет школу. Имеет `has_many :class_rooms`.
+*   `ClassRoom`: Представляет класс внутри школы. Принадлежит `UchiSchool` (`belongs_to :school`) и имеет много учеников (`has_many :students`). Включает в себя счетчик учеников `students_count` с использованием `counter_cache`.
+*   `Student`: Представляет ученика. Принадлежит `UchiSchool` и `ClassRoom`.
+
+### Аутентификация
+
+API использует аутентификацию на основе JSON Web Token (JWT).
+
+*   Для доступа к защищенным эндпоинтам необходимо передавать заголовок `Authorization: Bearer <token>`.
+*   Логика аутентификации реализована в `BaseController#authenticate_request`.
+*   Сервис `JwtTokenService` (`app/services/jwt_token_service.rb`) и библиотека `JsonWebToken` (`lib/json_web_token.rb`) отвечают за создание и валидацию токенов. При успешной аутентификации в `@current_student` помещается текущий пользователь.
+
+### Сервисный слой
+
+Логика, не относящаяся напрямую к модели или контроллеру, вынесена в сервисы.
+
+*   `StudentCreationService`: Инкапсулирует логику создания нового ученика.
+
+---
+
+## API Эндпоинты
+
+### Классы
+
+*   **Получить список классов школы**
+    *   **URL:** `/schools/:school_id/classes`
+    *   **Метод:** `GET`
+    *   **Пример ответа:**
+        ```json
+        [
+            {
+                "id": 1,
+                "number": 10,
+                "letter": "А",
+                "students_count": 25,
+                "school_id": 1
+            }
+        ]
+        ```
+
+### Ученики
+
+*   **Получить список учеников класса**
+    *   **URL:** `/schools/:school_id/classes/:class_id/students`
+    *   **Метод:** `GET`
+    *   **Пример ответа:**
+        ```json
+        [
+            {
+                "id": 1,
+                "first_name": "Иван",
+                "last_name": "Иванов",
+                "surname": "Иванович",
+                "class_id": 1,
+                "school_id": 1
+            }
+        ]
+        ```
+
+*   **Создать ученика**
+    *   **URL:** `/students`
+    *   **Метод:** `POST`
+    *   **Параметры:**
+        ```json
+        {
+            "student": {
+                "first_name": "Петр",
+                "last_name": "Петров",
+                "surname": "Петрович",
+                "school_id": 1,
+                "class_id": 1
+            }
+        }
+        ```
+
+*   **Удалить ученика**
+    *   **URL:** `/students/:id`
+    *   **Метод:** `DELETE`
+    *   **Требуется аутентификация.**
+
+---
+
+## Тестирование
+
+Для запуска всех тестов выполните:
+
+```bash
+rails test
+```
+
+Для запуска тестов конкретного файла:
+
+```bash
+rails test path/to/your/test_file.rb
+```
+
+---
+
+## Развертывание
+
+Проект настроен для развертывания с помощью **Kamal**. Конфигурационные файлы находятся в директории `.kamal`.
