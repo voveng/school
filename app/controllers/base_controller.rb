@@ -15,7 +15,7 @@ class BaseController < ActionController::API
   end
 
   def authenticate_request
-    token = request.headers['Authorization']&.split(' ')&.last
+    token = request.headers['X-Auth-Token']
     begin
       decoded = JsonWebToken.decode(token)
       @current_student = Student.find(decoded['student_id'])

@@ -7,7 +7,7 @@ class StudentsController < BaseController
   def create
     result = StudentCreationService.new(student_params).call
     if result[:success]
-      response.headers['Authorization'] = "Bearer #{result[:token]}"
+      response.headers['X-Auth-Token'] = result[:token]
       render_success result[:student], status: :created
     else
       render_resource_errors result[:student]

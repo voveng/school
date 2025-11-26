@@ -1,1 +1,1 @@
-json.data @classes, :number, :letter, :students_count
+json.data @classes, :id, :number, :letter, :students_count
