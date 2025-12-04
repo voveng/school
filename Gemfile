@@ -46,6 +46,6 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 end
 
-gem "dotenv", "~> 3.1"
+gem "dotenv", "~> 3.2"
 
 gem "jwt", "~> 3.1"
